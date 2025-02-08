@@ -1,11 +1,9 @@
 import pygame
 import os
-import sys
-import PIL
 from PIL import Image
 from random import randint
-
 pygame.init()
+
 
 def load_image(name, width, height, color_key=None):
     fullname = os.path.join('data', name)
@@ -30,9 +28,10 @@ def move(name, x, y):
 
 
 def get_scr_size(name):
-    loc = Image.open('data/' + name)
-    wloc, hloc = loc.size
+    locp = Image.open('data/' + name)
+    wloc, hloc = locp.size
     return wloc, hloc
+
 
 class SpriteGroup(pygame.sprite.Sprite):
     def __init__(self):
@@ -50,6 +49,7 @@ class Sprite(pygame.sprite.Sprite):
 
     def get_event(self, event):
         pass
+
 
 class Player(Sprite):
     def __init__(self, name, pos_x, pos_y):
@@ -70,7 +70,7 @@ class Player(Sprite):
 
 
 class PlayerAn(Sprite):
-    def __init__(self, size, center):
+    def __init__(self, center):
         super().__init__(first_g)
         self.anim = list()
         for i in range(1, 9):
@@ -80,7 +80,7 @@ class PlayerAn(Sprite):
         self.rect.center = center
         self.fr = 0
         self.last_update = pygame.time.get_ticks()
-        self.frame_rate = 200
+        self.frame_rate = 300
 
     def update_r(self):
         now = pygame.time.get_ticks()
@@ -102,19 +102,21 @@ class PlayerAn(Sprite):
             self.image = pygame.transform.rotate(self.image, 180)
             self.image = pygame.transform.flip(self.image, False, True)
 
-    def stand(self, dir):
+    def stand(self, dirc):
         self.fr = 0
         self.image = self.anim[self.fr]
-        if dir == 'l':
+        if dirc == 'l':
             self.fr = 0
             self.image = self.anim[self.fr]
             self.image = pygame.transform.rotate(self.image, 180)
             self.image = pygame.transform.flip(self.image, False, True)
 
+
 sprite_group = pygame.sprite.Group()
 first_g = pygame.sprite.Group()
 w, h = 800, 600
 screen = pygame.display.set_mode((w, h))
+pygame.display.set_caption('forest Traveler')
 running = True
 game_score = 0
 f1 = pygame.font.Font(None, 40)
@@ -123,7 +125,7 @@ widh = 180
 heih = 360
 widl, heil = get_scr_size('forest.png')
 widl = widl // 2
-speed = 6
+speed = 5
 moving = False
 to_left = False
 to_right = False
@@ -141,7 +143,7 @@ ch = pygame.Surface((800, 600))
 loc = load_image('forest.png', widl, h)
 loc2 = load_image('forest2.png', w, h, 0)
 player_image = load_image('01.png', widh, heih, -1)
-player = PlayerAn((180, 360), (w // 5, h // 1.5))
+player = PlayerAn((w // 5, h // 1.5))
 player2_im = load_image('up.png', 100, 100, -1)
 player2 = Player(player2_im, w // 2.5, h // 1.5)
 star_im = load_image('star.png', 50, 50)
@@ -197,7 +199,7 @@ while True:
         player2.add(first_g)
         move(loc2, loc2X, loc2Y)
         star.collide()
-        loc2Y += speed
+        loc2Y += speed + 1
         if j < 750:
             j = j + speed + 2
             star.move(r, j)
@@ -214,13 +216,13 @@ while True:
                 p2x -= speed
                 player2.move(p2x, p2y)
     if locX > 0 and to_up is False:
-        for i in range(1, 20):
+        for i in range(1, 200):
             move(loc, locX - (widl * i), locY)
     if locX < 0 and to_up is False:
-        for i in range(1, 20):
+        for i in range(1, 200):
             move(loc, locX + (widl * i), locY)
     if loc2Y > 0 and to_down is False:
-        for i in range(1, 20):
+        for i in range(1, 200):
             move(loc2, loc2X, loc2Y - (h * i))
     screen.blit(ch, (0, 0))
     sprite_group.draw(screen)
